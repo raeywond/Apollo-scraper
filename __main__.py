@@ -85,7 +85,7 @@ async def main():
             # Try to load saved cookies from Apify Key-Value Store
             saved_cookies = None
             try:
-                kvs = await Actor.open_key_value_store('default')
+               kvs = await Actor.open_key_value_store(name='default')   #
                 saved_cookies = await kvs.get_value('apollo_cookies')
                 if saved_cookies:
                     log_message("✅ Found saved cookies in Key-Value Store", 'SUCCESS')
@@ -107,7 +107,7 @@ async def main():
             # Save/update cookies to Key-Value Store for future runs
             if scraper.logged_in:
                 try:
-                    kvs = await Actor.open_key_value_store('default')
+                    kvs = await Actor.open_key_value_store(name='default')  
                     current_cookies = scraper.driver.get_cookies()
                     await kvs.set_value('apollo_cookies', current_cookies)
                     log_message("💾 Saved cookies to Key-Value Store for future runs", 'SUCCESS')
