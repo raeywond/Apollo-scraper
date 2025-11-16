@@ -521,6 +521,7 @@ class ApolloScraper:
         if not self.logged_in:
             log_message("❌ Not logged in! Please login first.", 'ERROR')
             return []
+            
      log_message(f"🌐 Navigating to: {url}", 'INFO')
 self.driver.get(url)
 random_delay(min_delay, max_delay)
@@ -761,5 +762,6 @@ try:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
