@@ -535,15 +535,7 @@ class ApolloScraper:
             log_message("💾 Saved HTML to debug_html/page_source", "INFO")
         except Exception as e:
             log_message(f"DEBUG HTML save failed: {e}", "WARNING")
-
-       
-
-# Random human-like behavior
-try:
-    # Scroll a bit (humans scroll)
-    ...
-   
-
+            
         
         # Random human-like behavior
         try:
@@ -764,6 +756,7 @@ try:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
