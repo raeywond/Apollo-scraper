@@ -46,7 +46,7 @@ async def main():
         # NOTE: Apollo.io detects Apify proxy - trying WITHOUT proxy first!
         # Get proxy URL if configured
         proxy_url = None
-        use_proxy_option = False  # Force disable proxy for better success rate
+        use_proxy_option = True  # Force disable proxy for better success rate
         
         if proxy_config and use_proxy_option:  # Proxy disabled by default
             try:
@@ -71,7 +71,7 @@ async def main():
         try:
             # Create scraper instance
             scraper = ApolloScraper(
-                headless=True,  # Always headless on Apify
+                headless= False,  # Always headless on Apify
                 use_proxy=proxy_url is not None,
                 proxy_url=proxy_url
             )
