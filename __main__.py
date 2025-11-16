@@ -82,17 +82,18 @@ async def main():
             # Login to Apollo with cookie support
             log_message("🔐 Attempting to login to Apollo.io...")
             
-            # Try to load saved cookies from Apify Key-Value Store
-            saved_cookies = None
-            try:
-               kvs = await Actor.open_key_value_store(name='default')   #
-                saved_cookies = await kvs.get_value('apollo_cookies')
-                if saved_cookies:
-                    log_message("✅ Found saved cookies in Key-Value Store", 'SUCCESS')
-                else:
-                    log_message("⚠️  No saved cookies found, will use password login", 'WARNING')
-            except Exception as e:
-                log_message(f"⚠️  Could not access Key-Value Store: {e}", 'WARNING')
+# Try to load saved cookies from Apify Key-Value Store
+saved_cookies = None
+try:
+    kvs = await Actor.open_key_value_store(name='default')
+    saved_cookies = await kvs.get_value('apollo_cookies')
+    if saved_cookies:
+        log_message("✅ Found saved cookies in Key-Value Store", 'SUCCESS')
+    else:
+        log_message("⚠️  No saved cookies found, will use password login", 'WARNING')
+except Exception as e:
+    log_message(f"⚠️  Could not access Key-Value Store: {e}", 'WARNING')
+
             
             # Attempt login (will try cookies first if available)
             login_success = scraper.login(
@@ -105,15 +106,16 @@ async def main():
                 raise RuntimeError('❌ Login to Apollo.io failed! Check credentials or try manual cookies.')
             
             # Save/update cookies to Key-Value Store for future runs
-            if scraper.logged_in:
-                try:
-                    kvs = await Actor.open_key_value_store(name='default')  
-                    current_cookies = scraper.driver.get_cookies()
-                    await kvs.set_value('apollo_cookies', current_cookies)
-                    log_message("💾 Saved cookies to Key-Value Store for future runs", 'SUCCESS')
-                    log_message("💡 TIP: Next run will use cookies and skip login!", 'INFO')
-                except Exception as e:
-                    log_message(f"⚠️  Could not save cookies: {e}", 'WARNING')
+           if scraper.logged_in:
+    try:
+        kvs = await Actor.open_key_value_store(name='default')
+        current_cookies = scraper.driver.get_cookies()
+        await kvs.set_value('apollo_cookies', current_cookies)
+        log_message("💾 Saved cookies to Key-Value Store for future runs", 'SUCCESS')
+        log_message("💡 TIP: Next run will use cookies and skip login!", 'INFO')
+    except Exception as e:
+        log_message(f"⚠️  Could not save cookies: {e}", 'WARNING')
+
             
             # Process each URL
             for idx, url_obj in enumerate(start_urls):
