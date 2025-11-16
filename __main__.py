@@ -107,7 +107,7 @@ async def main():
             # Save/update cookies to Key-Value Store for future runs
             if scraper.logged_in:
                 try:
-                    kvs = await Actor.open_key_value_store()
+                    kvs = await Actor.open_key_value_store('default')
                     current_cookies = scraper.driver.get_cookies()
                     await kvs.set_value('apollo_cookies', current_cookies)
                     log_message("💾 Saved cookies to Key-Value Store for future runs", 'SUCCESS')
