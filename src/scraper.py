@@ -541,9 +541,11 @@ class ApolloScraper:
         # Detect page type
         page_html = self.driver.page_source
 
-        #TEMP DEBUG: dump raw HTML into dataset so we can inspect it
-        log_message(" Debug: returning rawHTML as a single record", "WARNING")
-        RETURN [{"debug_gtml": page_gtml}]
+        # ---- TEMP DEBUG BLOCK ----
+        log_message("🐞 DEBUG: returning raw HTML as a single record", "WARNING")
+        return [{"debug_html": page_html}]
+        # ---- END TEMP DEBUG BLOCK ----
+
 
         # If URL looks like an Apollo People search, force 'search' type
         if '#/people' in url:
@@ -753,6 +755,7 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
