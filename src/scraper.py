@@ -522,19 +522,21 @@ class ApolloScraper:
             log_message("❌ Not logged in! Please login first.", 'ERROR')
             return []
             
-     log_message(f"🌐 Navigating to: {url}", 'INFO')
-self.driver.get(url)
-random_delay(min_delay, max_delay)
+            log_message(f"🌐 Navigating to: {url}", 'INFO')
+        self.driver.get(url)
+        random_delay(min_delay, max_delay)
 
-# DEBUG: Save HTML to Apify for inspection
-from apify import Actor  # you can move this to the top of the file if you prefer
-try:
-    html = self.driver.page_source
-    kvs = Actor.get_value_store("debug_html")
-    kvs.set_value("page_source", html)
-    log_message("💾 Saved HTML to debug_html/page_source", "INFO")
-except Exception as e:
-    log_message(f"DEBUG HTML save failed: {e}", "WARNING")
+        # DEBUG: Save HTML to Apify for inspection
+        from apify import Actor
+        try:
+            html = self.driver.page_source
+            kvs = Actor.get_value_store("debug_html")
+            kvs.set_value("page_source", html)
+            log_message("💾 Saved HTML to debug_html/page_source", "INFO")
+        except Exception as e:
+            log_message(f"DEBUG HTML save failed: {e}", "WARNING")
+
+       
 
 # Random human-like behavior
 try:
@@ -762,6 +764,7 @@ try:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
