@@ -85,7 +85,7 @@ async def main():
             # Try to load saved cookies from Apify Key-Value Store
             saved_cookies = None
             try:
-                kvs = await Actor.open_key_value_store()
+                kvs = await Actor.open_key_value_store('default')
                 saved_cookies = await kvs.get_value('apollo_cookies')
                 if saved_cookies:
                     log_message("✅ Found saved cookies in Key-Value Store", 'SUCCESS')
