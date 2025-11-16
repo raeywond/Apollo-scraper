@@ -536,8 +536,15 @@ class ApolloScraper:
         
         # Detect page type
         page_html = self.driver.page_source
-        page_type = detect_page_type(page_html)
+
+        # If URL looks like an Apollo People search, force 'search' type
+        if '#/people' in url:
+            page_type = 'search'
+        else:
+            page_type = detect_page_type(page_html)
+
         log_message(f"📄 Detected page type: {page_type}", 'INFO')
+
         
         if page_type == 'search':
             return self._scrape_search_results(follow_links, max_pages, min_delay, max_delay)
@@ -738,3 +745,4 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
