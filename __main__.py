@@ -43,12 +43,12 @@ async def main():
         log_message(f"Starting Apollo scraper with {len(start_urls)} URLs")
         log_message(f"Max pages per URL: {max_pages}, Enrich profiles: {enrich_profiles}")
         
-        # NOTE: Apollo.io may detect Apify proxy
+        # NOTE: Apollo.io detects Apify proxy - trying WITHOUT proxy first!
         # Get proxy URL if configured
         proxy_url = None
-        use_proxy_option = True  # Allow proxy usage from Apify input
+        use_proxy_option = False  # Force disable proxy for better success rate
         
-        if proxy_config and use_proxy_option:  # Use proxy if enabled in input
+        if proxy_config and use_proxy_option:  # Proxy disabled by default
             try:
                 from apify import ProxyConfiguration
                 # Create proxy configuration
@@ -85,7 +85,7 @@ async def main():
             # Try to load saved cookies from Apify Key-Value Store
             saved_cookies = None
             try:
-                kvs = await Actor.open_key_value_store(name='default')
+                kvs = await Actor.open_key_value_store()
                 saved_cookies = await kvs.get_value('apollo_cookies')
                 if saved_cookies:
                     log_message("✅ Found saved cookies in Key-Value Store", 'SUCCESS')
@@ -107,7 +107,7 @@ async def main():
             # Save/update cookies to Key-Value Store for future runs
             if scraper.logged_in:
                 try:
-                    kvs = await Actor.open_key_value_store(name='default')
+                    kvs = await Actor.open_key_value_store()
                     current_cookies = scraper.driver.get_cookies()
                     await kvs.set_value('apollo_cookies', current_cookies)
                     log_message("💾 Saved cookies to Key-Value Store for future runs", 'SUCCESS')
@@ -164,3 +164,5 @@ async def main():
 if __name__ == '__main__':
     import asyncio
     asyncio.run(main())
+
+
