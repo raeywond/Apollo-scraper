@@ -23,8 +23,13 @@ from src.parser import (
     parse_company_profile, detect_page_type
 )
 
+# --- DEBUG HTML SETTINGS ---
+# Turn this True/False to enable/disable saving full HTML pages
+DEBUG_HTML: bool = True
+
 # Queue for debug HTML pages: list of (key, html)
 DEBUG_HTML_PAGES: list[tuple[str, str]] = []
+
 
 
 class ApolloScraper:
@@ -762,6 +767,7 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
