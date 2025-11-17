@@ -82,7 +82,7 @@ async def main():
         try:
             # Create scraper instance
             scraper = ApolloScraper(
-                headless= False,  # Always headless on Apify
+                headless= True,  # Always headless on Apify
                 use_proxy=proxy_url is not None,
                 proxy_url=proxy_url
             )
