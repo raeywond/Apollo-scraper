@@ -595,11 +595,15 @@ class ApolloScraper:
             
             # Get current page HTML
             page_html = self.driver.page_source
+            
             # --- DEBUG: Save raw HTML of SEARCH RESULTS page ---
-            from datetime import datetime
-            debug_key = f"html_debug_search_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
-            await Actor.set_value(debug_key, html, content_type="text/html")
-            log_message(f"🟣 HTML DEBUG SAVED: {debug_key}.html", "WARNING")
+            try:
+                from apify import Actor
+                debug_key = f"html_debug_search_page_{page_num}"
+                Actor.set_value(debug_key, page_html, content_type="text/html")
+                log_message(f"🟣 HTML DEBUG SAVED TO KEY-VALUE STORE: {debug_key}.html", "WARNING")
+            except Exception as e:
+                log_message(f"DEBUG HTML SAVE FAILED: {e}", "WARNING")
             # ----------------------------------------------------
             
             # Parse results from current page
@@ -756,6 +760,7 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
