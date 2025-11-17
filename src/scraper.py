@@ -605,13 +605,10 @@ class ApolloScraper:
             page_html = self.driver.page_source
             
             if DEBUG_HTML:
-               try:
-                   from src.scraper import DEBUG_HTML_PAGES  # same file, so this is safe
-                   debug_key = f"html_debug_search_page_{current_page}.html"
-                   DEBUG_HTML_PAGES.append((debug_key, page_html))
-                   log_message(f"🟣 Queued HTML debug page: {debug_key}", 'WARNING')
-               except Exception as e:
-                   log_message(f"Failed to queue HTML debug: {e}", 'WARNING')
+                 debug_key = f"html_debug_search_page_{page_num}.html"
+                 DEBUG_HTML_PAGES.append((debug_key, page_html))
+                 log_message(f"🟣 Queued HTML debug page: {debug_key}", 'WARNING')
+
             
             # Parse results from current page
             results = parse_search_results(page_html)
@@ -767,6 +764,7 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
