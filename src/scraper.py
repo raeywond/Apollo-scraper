@@ -595,6 +595,12 @@ class ApolloScraper:
             
             # Get current page HTML
             page_html = self.driver.page_source
+            # --- DEBUG: Save raw HTML of SEARCH RESULTS page ---
+            from datetime import datetime
+            debug_key = f"html_debug_search_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            await Actor.set_value(debug_key, html, content_type="text/html")
+            log_message(f"🟣 HTML DEBUG SAVED: {debug_key}.html", "WARNING")
+            # ----------------------------------------------------
             
             # Parse results from current page
             results = parse_search_results(page_html)
@@ -750,6 +756,7 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
