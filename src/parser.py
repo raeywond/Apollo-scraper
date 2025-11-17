@@ -24,13 +24,35 @@ def parse_search_results(html: str) -> List[Dict[str, Any]]:
     soup = BeautifulSoup(html, 'lxml')
     results = []
     
-    # Apollo uses various class names - we need to be flexible
-    # Try multiple selectors as Apollo's DOM changes frequently
-    result_items = (
-        soup.find_all('tr', class_=re.compile(r'.*person.*row.*', re.I)) or
-        soup.find_all('div', class_=re.compile(r'.*search.*result.*item.*', re.I)) or
-        soup.find_all('div', {'data-cy': re.compile(r'.*person.*')})
-    )
+    # Try multiple patterns for Apollo People rows (updated 2025 DOM)
+    selectors = [
+        'tr[data-rowkey]',
+        'tr[data-row-key]',
+        'div[data-cy*="ProspectRow"]',
+        'div[data-testid*="ProspectRow"]',
+        'div[class*="prospect-row"]',
+        'div[class*="people-table-row"]',
+        'div[class*="PeopleTableRow"]',
+        'div[class*="person-row"]',
+    ]
+
+    result_items = []
+    for selector in selectors:
+        found = soup.select(selector)
+        if found:
+            result_items.extend(found)
+
+    # Fallback to original logic
+    if not result_items:
+        fallback = (
+            soup.find_all('tr', class_=re.compile(r'.*person.*row.*', re.I)) or
+            soup.find_all('div', class_=re.compile(r'.*search.*result.*item.*', re.I)) or
+            soup.find_all('div', {'data-cy': re.compile(r'.*person.*', re.I)})
+        )
+        result_items.extend(fallback)
+
+    log_message(f"🟡 DEBUG: Found {len(result_items)} result items on page", 'WARNING')
+
     
     log_message(f"Found {len(result_items)} result items on page", 'DEBUG')
     
