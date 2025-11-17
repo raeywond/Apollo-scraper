@@ -9,6 +9,7 @@ Works forever with free accounts - no credits needed!
 from apify import Actor
 from src.scraper import ApolloScraper
 from src.utils import log_message, is_valid_url
+from src.config import DEBUG_HTML
 import json
 
 
@@ -159,6 +160,16 @@ async def main():
                     continue
             
             log_message(f"Scraping complete! Total results: {total_results}", 'SUCCESS')
+            # Save any queued HTML debug pages
+            if DEBUG_HTML and DEBUG_HTML_PAGES:
+                for key, html in DEBUG_HTML_PAGES:
+                    try:
+                        await Actor.set_value(key, html, content_type="text/html")
+                        log_message(f"🟣 HTML DEBUG SAVED TO KEY-VALUE STORE: {key}", 'WARNING')
+                    except Exception as e:
+                        log_message(f"Failed to save debug HTML ({key}): {e}", 'WARNING')
+
+            
             
         except Exception as e:
             log_message(f"Fatal error: {str(e)}", 'ERROR')
