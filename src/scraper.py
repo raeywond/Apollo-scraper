@@ -23,6 +23,9 @@ from src.parser import (
     parse_company_profile, detect_page_type
 )
 
+# Queue for debug HTML pages: list of (key, html)
+DEBUG_HTML_PAGES: list[tuple[str, str]] = []
+
 
 class ApolloScraper:
     """Advanced Apollo.io scraper with anti-detection capabilities"""
@@ -596,15 +599,14 @@ class ApolloScraper:
             # Get current page HTML
             page_html = self.driver.page_source
             
-            # --- DEBUG: Save raw HTML of SEARCH RESULTS page ---
-            try:
-                from apify import Actor
-                debug_key = f"html_debug_search_page_{page_num}"
-                Actor.set_value(debug_key, page_html, content_type="text/html")
-                log_message(f"🟣 HTML DEBUG SAVED TO KEY-VALUE STORE: {debug_key}.html", "WARNING")
-            except Exception as e:
-                log_message(f"DEBUG HTML SAVE FAILED: {e}", "WARNING")
-            # ----------------------------------------------------
+            if DEBUG_HTML:
+               try:
+                   from src.scraper import DEBUG_HTML_PAGES  # same file, so this is safe
+                   debug_key = f"html_debug_search_page_{current_page}.html"
+                   DEBUG_HTML_PAGES.append((debug_key, page_html))
+                   log_message(f"🟣 Queued HTML debug page: {debug_key}", 'WARNING')
+               except Exception as e:
+                   log_message(f"Failed to queue HTML debug: {e}", 'WARNING')
             
             # Parse results from current page
             results = parse_search_results(page_html)
@@ -760,6 +762,7 @@ class ApolloScraper:
     def __exit__(self, exc_type, exc_val, exc_tb):
         """Context manager exit"""
         self.close()
+
 
 
 
