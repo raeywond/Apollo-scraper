@@ -42,27 +42,30 @@ async def main():
         
         log_message(f"Starting Apollo scraper with {len(start_urls)} URLs")
         log_message(f"Max pages per URL: {max_pages}, Enrich profiles: {enrich_profiles}")
-        
+            # Get proxy URL if configured (Own proxies / Bright Data)
+            proxy_url = None
+            if isinstance(proxy_config, dict):
+               # Apify UI sends: { "useApifyProxy": false, "proxyUrls": ["http://user:pass@host:port"] }
+               proxy_urls = proxy_config.get('proxyUrls') or proxy_config.get('proxyUrl')
+               if isinstance(proxy_urls, list) and proxy_urls:
+                   proxy_url = proxy_urls[0]
+               elif isinstance(proxy_urls, str) and proxy_urls:
+                   proxy_url = proxy_urls
+               if proxy_url:
+                  # Don’t log your credentials
+                  safe_proxy = proxy_url.split('@')[-1]
+                  log_message(f"Using external proxy: {safe_proxy}", 'INFO')
+               else:
+                  log_message("proxyConfiguration present but no proxyUrls; continuing without proxy", 'WARNING')
+         else:
+             log_message("No proxyConfiguration in input; continuing without proxy", 'WARNING')
+
         # NOTE: Apollo.io detects Apify proxy - trying WITHOUT proxy first!
         # Get proxy URL if configured
         proxy_url = None
         use_proxy_option = True  # Force disable proxy for better success rate
         
-        if proxy_config and use_proxy_option:  # Proxy disabled by default
-            try:
-                from apify import ProxyConfiguration
-                # Create proxy configuration
-                if isinstance(proxy_config, dict) and proxy_config.get('useApifyProxy'):
-                    proxy_configuration = ProxyConfiguration()
-                else:
-                    proxy_configuration = ProxyConfiguration(**proxy_config) if isinstance(proxy_config, dict) else ProxyConfiguration()
-                proxy_url = await proxy_configuration.new_url()
-                log_message(f"Using proxy: {proxy_url[:50]}...")
-            except Exception as e:
-                log_message(f"Proxy setup failed, continuing without proxy: {e}", 'WARNING')
-                proxy_url = None
-        else:
-            log_message("⚠️  Proxy DISABLED - Apollo.io blocks Apify proxy IPs", 'WARNING')
+
         
         # Initialize scraper
         scraper = None
