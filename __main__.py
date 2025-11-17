@@ -42,28 +42,36 @@ async def main():
         
         log_message(f"Starting Apollo scraper with {len(start_urls)} URLs")
         log_message(f"Max pages per URL: {max_pages}, Enrich profiles: {enrich_profiles}")
-            # Get proxy URL if configured (Own proxies / Bright Data)
-            proxy_url = None
-            if isinstance(proxy_config, dict):
-               # Apify UI sends: { "useApifyProxy": false, "proxyUrls": ["http://user:pass@host:port"] }
-               proxy_urls = proxy_config.get('proxyUrls') or proxy_config.get('proxyUrl')
-               if isinstance(proxy_urls, list) and proxy_urls:
-                   proxy_url = proxy_urls[0]
-               elif isinstance(proxy_urls, str) and proxy_urls:
-                   proxy_url = proxy_urls
-               if proxy_url:
-                  # Don’t log your credentials
-                  safe_proxy = proxy_url.split('@')[-1]
-                  log_message(f"Using external proxy: {safe_proxy}", 'INFO')
-               else:
-                  log_message("proxyConfiguration present but no proxyUrls; continuing without proxy", 'WARNING')
-         else:
-             log_message("No proxyConfiguration in input; continuing without proxy", 'WARNING')
 
-        # NOTE: Apollo.io detects Apify proxy - trying WITHOUT proxy first!
-        # Get proxy URL if configured
+        # ----------------- PROXY HANDLING (Bright Data / Own proxies) -----------------
         proxy_url = None
-        use_proxy_option = True  # Force disable proxy for better success rate
+
+        if isinstance(proxy_config, dict):
+            # Apify UI sends:
+            # {
+            #   "useApifyProxy": false,
+            #   "proxyUrls": ["http://user:pass@host:port"]
+            # }
+            proxy_urls = proxy_config.get('proxyUrls') or proxy_config.get('proxyUrl')
+
+            if isinstance(proxy_urls, list) and proxy_urls:
+                proxy_url = proxy_urls[0]
+            elif isinstance(proxy_urls, str) and proxy_urls:
+                proxy_url = proxy_urls
+
+            if proxy_url:
+                # Don’t log your credentials
+                safe_proxy = proxy_url.split('@')[-1]
+                log_message(f"Using external proxy: {safe_proxy}", 'INFO')
+            else:
+                log_message(
+                    "proxyConfiguration present but no proxyUrls; continuing without proxy",
+                    'WARNING'
+                )
+        else:
+            log_message("No proxyConfiguration in input; continuing without proxy", 'WARNING')
+        # -------------------------------------------------------------------
+
         
 
         
