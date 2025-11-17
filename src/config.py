@@ -1,7 +1,7 @@
 """
 Configuration management for Apollo scraper Apify Actor.
 """
-
+DEBUG_HTML = True
 class Config:
     """Central configuration class for Apollo scraper"""
     
@@ -32,6 +32,7 @@ class Config:
         """Get a random user agent from the list"""
         import random
         return random.choice(cls.USER_AGENTS)
+
 
 
 
